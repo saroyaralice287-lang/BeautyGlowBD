@@ -40,17 +40,19 @@ export default function ProductCard({ product }: any) {
 </button>
 
         <button
-          onClick={() =>
-            addToWishlist({
-              id: product.id,
-              name: product.name,
-              price: product.price,
-            })
-          }
-          className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-        >
-          ❤️ Wishlist
-        </button>
+  onClick={() => {
+    console.log("Wishlist clicked", product);
+
+    addToWishlist({
+      id: String(product._id || product.id),
+      name: product.name,
+      price: String(product.price),
+    });
+  }}
+  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+>
+  ❤️ Wishlist
+</button>
 
         <Link href={`/products/${product.id}`}>
           <button className="border border-pink-600 text-pink-600 px-4 py-2 rounded-lg hover:bg-pink-50">

@@ -2,6 +2,7 @@ import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Products from "./components/Products";
 import Categories from "./components/Categories";
+import Footer from "./components/Footer";
 import Link from "next/link";
 
 export default function Home() {
@@ -20,6 +21,7 @@ export default function Home() {
       </div>
 
       <Categories />
+      <Footer />
     </>
   );
 }
