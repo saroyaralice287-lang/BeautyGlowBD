@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import ProductCard from "../components/ProductCard";
 
@@ -111,8 +111,9 @@ const products = [
   },
 ];
 
-export default function ProductsPage() {
+function ProductsContent() {
   const searchParams = useSearchParams();
+
   const category = searchParams.get("category");
 
   const [search, setSearch] = useState("");
@@ -133,22 +134,41 @@ export default function ProductsPage() {
   return (
     <section className="min-h-screen bg-pink-50 py-10">
       <div className="mx-auto max-w-7xl px-4">
+
+        {/* Title */}
         <h1 className="mb-6 text-center text-4xl font-bold text-pink-600">
           All Products 💖
         </h1>
 
+        {/* Search */}
         <input
           type="text"
           placeholder="Search products..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="mb-8 w-full rounded-xl border border-pink-200 px-4 py-3 outline-none focus:border-pink-500"
+          className="mb-8 w-full rounded-xl border border-pink-200 bg-white px-4 py-3 outline-none transition focus:border-pink-500"
         />
 
+        {/* Category */}
+        {category && (
+          <div className="mb-6 text-center">
+            <span className="rounded-full bg-pink-100 px-4 py-2 text-sm font-semibold text-pink-600">
+              Category: {category}
+            </span>
+          </div>
+        )}
+
+        {/* Products */}
         {filteredProducts.length === 0 ? (
-          <p className="text-center text-gray-500">
-            No products found.
-          </p>
+          <div className="rounded-2xl bg-white py-16 text-center shadow-sm">
+            <p className="text-lg font-semibold text-gray-500">
+              No products found.
+            </p>
+
+            <p className="mt-2 text-sm text-gray-400">
+              Try another search or category.
+            </p>
+          </div>
         ) : (
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
             {filteredProducts.map((product) => (
@@ -159,7 +179,27 @@ export default function ProductsPage() {
             ))}
           </div>
         )}
+
       </div>
     </section>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense
+      fallback={
+        <section className="flex min-h-screen items-center justify-center bg-pink-50">
+          <div className="text-center">
+            <div className="text-4xl">💖</div>
+            <p className="mt-3 font-semibold text-pink-600">
+              Loading products...
+            </p>
+          </div>
+        </section>
+      }
+    >
+      <ProductsContent />
+    </Suspense>
   );
 }

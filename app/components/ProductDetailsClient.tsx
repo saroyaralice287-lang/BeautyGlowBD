@@ -52,19 +52,18 @@ export default function ProductDetailsClient({
     addToWishlist({
       id: product._id,
       name: product.name,
-      price: String(product.price),
+      price: Number(product.price),
+      image: product.image || "/images/lipstick.jpg",
     });
   };
 
   return (
     <main className="min-h-screen bg-[#fffafb]">
-
       {/* =========================
           BREADCRUMB
       ========================== */}
       <div className="border-b border-gray-100 bg-white">
         <div className="mx-auto max-w-7xl px-4 py-4 text-sm text-gray-500 sm:px-6 lg:px-8">
-
           <Link
             href="/"
             className="transition hover:text-pink-600"
@@ -86,22 +85,19 @@ export default function ProductDetailsClient({
           <span className="font-medium text-gray-800">
             {product.name}
           </span>
-
         </div>
       </div>
 
       {/* =========================
           PRODUCT AREA
       ========================== */}
-      <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 sm:py-12">
-
+      <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
         <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
 
           {/* =========================
               IMAGE
           ========================== */}
           <div>
-
             <div className="relative overflow-hidden rounded-3xl border border-gray-100 bg-white p-5 shadow-sm">
 
               <div className="absolute left-5 top-5 z-10 rounded-full bg-pink-600 px-4 py-1.5 text-xs font-bold text-white">
@@ -109,7 +105,6 @@ export default function ProductDetailsClient({
               </div>
 
               <div className="relative aspect-square overflow-hidden rounded-2xl bg-[#fff7fa]">
-
                 <Image
                   src={product.image || "/images/lipstick.jpg"}
                   alt={product.name}
@@ -118,9 +113,7 @@ export default function ProductDetailsClient({
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-contain p-6 transition duration-500 hover:scale-105 sm:p-10"
                 />
-
               </div>
-
             </div>
 
             {/* Trust Cards */}
@@ -148,14 +141,12 @@ export default function ProductDetailsClient({
               </div>
 
             </div>
-
           </div>
 
           {/* =========================
               DETAILS
           ========================== */}
           <div>
-
             <p className="text-xs font-bold uppercase tracking-[3px] text-pink-600">
               QYVANO A²Z
             </p>
@@ -205,7 +196,6 @@ export default function ProductDetailsClient({
                 </span>
 
               </div>
-
             </div>
 
             {/* Stock */}
@@ -258,7 +248,6 @@ export default function ProductDetailsClient({
                   </button>
 
                 </div>
-
               </div>
             )}
 
@@ -342,9 +331,7 @@ export default function ProductDetailsClient({
               </div>
 
             </div>
-
           </div>
-
         </div>
 
         {/* =========================
@@ -378,7 +365,9 @@ export default function ProductDetailsClient({
 
             <div className="rounded-2xl bg-[#fff7fa] p-5">
               <div className="text-2xl">💎</div>
-              <h3 className="mt-3 font-bold">Premium Quality</h3>
+              <h3 className="mt-3 font-bold">
+                Premium Quality
+              </h3>
               <p className="mt-1 text-sm text-gray-500">
                 Carefully selected for our customers.
               </p>
@@ -386,7 +375,9 @@ export default function ProductDetailsClient({
 
             <div className="rounded-2xl bg-[#fff7fa] p-5">
               <div className="text-2xl">🌿</div>
-              <h3 className="mt-3 font-bold">Beauty Care</h3>
+              <h3 className="mt-3 font-bold">
+                Beauty Care
+              </h3>
               <p className="mt-1 text-sm text-gray-500">
                 Designed for your daily beauty routine.
               </p>
@@ -394,7 +385,9 @@ export default function ProductDetailsClient({
 
             <div className="rounded-2xl bg-[#fff7fa] p-5">
               <div className="text-2xl">🛡️</div>
-              <h3 className="mt-3 font-bold">Trusted Choice</h3>
+              <h3 className="mt-3 font-bold">
+                Trusted Choice
+              </h3>
               <p className="mt-1 text-sm text-gray-500">
                 Quality-focused shopping experience.
               </p>
@@ -402,14 +395,15 @@ export default function ProductDetailsClient({
 
             <div className="rounded-2xl bg-[#fff7fa] p-5">
               <div className="text-2xl">🎁</div>
-              <h3 className="mt-3 font-bold">Great Value</h3>
+              <h3 className="mt-3 font-bold">
+                Great Value
+              </h3>
               <p className="mt-1 text-sm text-gray-500">
                 Great products at competitive prices.
               </p>
             </div>
 
           </div>
-
         </div>
 
         {/* =========================
@@ -425,9 +419,7 @@ export default function ProductDetailsClient({
           </Link>
 
         </div>
-
       </section>
-
     </main>
   );
 }
