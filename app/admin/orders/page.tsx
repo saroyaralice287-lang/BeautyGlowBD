@@ -7,7 +7,10 @@ type Order = {
   _id: string;
   customer: string;
   email: string;
-  product: string;
+  phone: string;
+  address: string;
+  product?: string;
+  products?: any[];
   total: number;
   status: string;
 };
@@ -228,6 +231,8 @@ export default function OrdersPage() {
                         Status
                       </th>
                     </tr>
+                    <th className="px-6 py-4">Phone</th>
+<th className="px-6 py-4">Address</th>
                   </thead>
 
                   <tbody>
@@ -245,13 +250,24 @@ export default function OrdersPage() {
                             {order.customer}
                           </div>
 
+<td className="px-6 py-4">{order.phone}</td>
+
+<td className="px-6 py-4 max-w-xs break-words">
+  {order.address}
+</td>
                           <div className="text-sm text-gray-500 break-all">
                             {order.email}
                           </div>
                         </td>
 
                         <td className="px-6 py-4">
-                          {order.product}
+                          {order.products
+  ? order.products.map((item: any) => (
+      <p key={item.id}>
+        {item.name} × {item.quantity}
+      </p>
+    ))
+  : order.product}
                         </td>
 
                         <td className="px-6 py-4">

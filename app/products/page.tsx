@@ -1,62 +1,165 @@
 "use client";
 
-import { useCart } from "../context/CartContext";
+import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import ProductCard from "../components/ProductCard";
 
-export default function CartPage() {
-  const {
-    cart,
-    removeFromCart,
-    increaseQuantity,
-    decreaseQuantity,
-  } = useCart();
+const products = [
+  {
+    id: 1,
+    name: "Face Cream",
+    price: 650,
+    image: "/images/face-cream.jpg",
+    category: "skincare",
+    description: "Moisturizing face cream for glowing skin.",
+  },
+  {
+    id: 2,
+    name: "Vitamin C Serum",
+    price: 850,
+    image: "/images/serum.jpg",
+    category: "skincare",
+    description: "Brightens skin and reduces dark spots.",
+  },
+  {
+    id: 3,
+    name: "Body Mist Fresh Bloom",
+    price: 750,
+    image: "/images/body-mist-fresh-bloom.jpg",
+    category: "perfume",
+    description: "Long-lasting floral fragrance.",
+  },
+  {
+    id: 4,
+    name: "Matte Lipstick",
+    price: 500,
+    image: "/images/lipstick.jpg",
+    category: "makeup",
+    description: "Beautiful long-lasting matte lipstick.",
+  },
+  {
+    id: 5,
+    name: "Sunscreen SPF 50+",
+    price: 950,
+    image: "/images/sunscreen.jpg",
+    category: "sunscreen",
+    description: "Protects skin from harmful UV rays.",
+  },
+  {
+    id: 6,
+    name: "Face Wash",
+    price: 420,
+    image: "/images/facewash.jpg",
+    category: "face-wash",
+    description: "Deep cleansing face wash.",
+  },
+  {
+    id: 7,
+    name: "Hair Shampoo",
+    price: 590,
+    image: "/images/shampoo.jpg",
+    category: "hair-care",
+    description: "Smooth and silky hair shampoo.",
+  },
+  {
+    id: 8,
+    name: "Hair Oil",
+    price: 480,
+    image: "/images/hair-oil.jpg",
+    category: "hair-care",
+    description: "Nourishing hair oil for healthy hair.",
+  },
+  {
+    id: 9,
+    name: "Compact Powder",
+    price: 650,
+    image: "/images/compact-powder.jpg",
+    category: "makeup",
+    description: "Lightweight compact powder.",
+  },
+  {
+    id: 10,
+    name: "BB Cream",
+    price: 780,
+    image: "/images/bb-cream.jpg",
+    category: "makeup",
+    description: "Natural everyday makeup coverage.",
+  },
+  {
+    id: 11,
+    name: "Perfume Rose Love",
+    price: 1100,
+    image: "/images/perfume.jpg",
+    category: "perfume",
+    description: "Premium romantic fragrance.",
+  },
+  {
+    id: 12,
+    name: "Night Cream",
+    price: 700,
+    image: "/images/night-cream.jpg",
+    category: "skincare",
+    description: "Repairs skin overnight.",
+  },
+  {
+    id: 13,
+    name: "Lip Gloss",
+    price: 450,
+    image: "/images/lip-gloss.jpg",
+    category: "makeup",
+    description: "Shiny hydrating lip gloss.",
+  },
+];
 
-  if (cart.length === 0) {
-    return (
-      <div className="p-10 text-center">
-        <h1 className="text-2xl font-bold">Your Cart is Empty</h1>
-      </div>
-    );
-  }
+export default function ProductsPage() {
+  const searchParams = useSearchParams();
+  const category = searchParams.get("category");
+
+  const [search, setSearch] = useState("");
+
+  const filteredProducts = useMemo(() => {
+    return products.filter((product) => {
+      const matchSearch = product.name
+        .toLowerCase()
+        .includes(search.toLowerCase());
+
+      const matchCategory =
+        !category || product.category === category;
+
+      return matchSearch && matchCategory;
+    });
+  }, [search, category]);
 
   return (
-    <div className="p-10">
-      <h1 className="text-3xl font-bold mb-6">Shopping Cart</h1>
+    <section className="min-h-screen bg-pink-50 py-10">
+      <div className="mx-auto max-w-7xl px-4">
+        <h1 className="mb-6 text-center text-4xl font-bold text-pink-600">
+          All Products 💖
+        </h1>
 
-      {cart.map((item: any) => (
-        <div
-          key={item.id}
-          className="border rounded-lg p-4 mb-4 flex justify-between items-center"
-        >
-          <div>
-            <h2 className="text-xl font-semibold">{item.name}</h2>
-            <p>{item.price}</p>
-            <p>Quantity: {item.quantity}</p>
+        <input
+          type="text"
+          placeholder="Search products..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="mb-8 w-full rounded-xl border border-pink-200 px-4 py-3 outline-none focus:border-pink-500"
+        />
+
+        {filteredProducts.length === 0 ? (
+          <p className="text-center text-gray-500">
+            No products found.
+          </p>
+        ) : (
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+            {filteredProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+              />
+            ))}
           </div>
-
-          <div className="flex gap-2">
-            <button
-              onClick={() => decreaseQuantity(item.id)}
-              className="bg-gray-500 text-white px-3 py-1 rounded"
-            >
-              -
-            </button>
-
-            <button
-              onClick={() => increaseQuantity(item.id)}
-              className="bg-green-500 text-white px-3 py-1 rounded"
-            >
-              +
-            </button>
-
-            <button
-              onClick={() => removeFromCart(item.id)}
-              className="bg-red-500 text-white px-3 py-1 rounded"
-            >
-              Remove
-            </button>
-          </div>
-        </div>
-      ))}
-    </div>
+        )}
+      </div>
+    </section>
   );
 }

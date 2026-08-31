@@ -6,11 +6,35 @@ import { useEffect, useState } from "react";
 type Product = {
   _id: string;
   name: string;
+  category: string;
   price: number;
   stock: number;
   description: string;
   image: string;
 };
+
+const categories = [
+  { name: "Skincare", slug: "skincare" },
+  { name: "Makeup", slug: "makeup" },
+  { name: "Hair Care", slug: "hair-care" },
+  { name: "Perfume", slug: "perfume" },
+  { name: "Sunscreen", slug: "sunscreen" },
+  { name: "Face Wash", slug: "face-wash" },
+  { name: "Ladies Bag", slug: "ladies-bag" },
+  { name: "Sunglasses", slug: "sunglasses" },
+  { name: "Ladies Dress", slug: "ladies-dress" },
+  { name: "Ladies Jeans", slug: "ladies-jeans" },
+  { name: "Ladies Pants", slug: "ladies-pants" },
+  { name: "Borka & Abaya", slug: "borka-abaya" },
+  { name: "Short Pant", slug: "short-pant" },
+  { name: "Tops", slug: "tops" },
+  { name: "Three Piece", slug: "three-piece" },
+  { name: "Hijab", slug: "hijab" },
+  { name: "Ladies Shoes", slug: "ladies-shoes" },
+  { name: "Sandals", slug: "sandals" },
+  { name: "Jewellery", slug: "jewellery" },
+  { name: "Watches", slug: "watches" },
+];
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -20,12 +44,12 @@ export default function AdminProductsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const [name, setName] = useState("");
+  const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
   const [stock, setStock] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
 
-  // Load products from MongoDB
   const fetchProducts = async () => {
     try {
       const response = await fetch("/api/products");
@@ -50,6 +74,7 @@ export default function AdminProductsPage() {
 
   const resetForm = () => {
     setName("");
+    setCategory("");
     setPrice("");
     setStock("");
     setDescription("");
@@ -60,7 +85,14 @@ export default function AdminProductsPage() {
 
   // Add Product
   const addProduct = async () => {
-    if (!name || !price || !stock || !description || !image) {
+    if (
+      !name ||
+      !category ||
+      !price ||
+      !stock ||
+      !description ||
+      !image
+    ) {
       alert("Please fill all fields");
       return;
     }
@@ -73,6 +105,7 @@ export default function AdminProductsPage() {
         },
         body: JSON.stringify({
           name,
+          category,
           price: Number(price),
           stock: Number(stock),
           description,
@@ -100,6 +133,7 @@ export default function AdminProductsPage() {
   const startEdit = (product: Product) => {
     setEditingId(product._id);
     setName(product.name);
+    setCategory(product.category || "");
     setPrice(product.price.toString());
     setStock(product.stock.toString());
     setDescription(product.description);
@@ -109,7 +143,15 @@ export default function AdminProductsPage() {
 
   // Update Product
   const updateProduct = async () => {
-    if (!name || !price || !stock || !description || !image || !editingId) {
+    if (
+      !name ||
+      !category ||
+      !price ||
+      !stock ||
+      !description ||
+      !image ||
+      !editingId
+    ) {
       alert("Please fill all fields");
       return;
     }
@@ -122,6 +164,7 @@ export default function AdminProductsPage() {
         },
         body: JSON.stringify({
           name,
+          category,
           price: Number(price),
           stock: Number(stock),
           description,
@@ -177,16 +220,16 @@ export default function AdminProductsPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-3">
-      <div className="max-w-6xl mx-auto">
+      <div className="mx-auto max-w-6xl">
 
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+        <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-2xl font-bold text-pink-600">
               Manage Products
             </h1>
 
-            <p className="text-gray-500 mt-1">
+            <p className="mt-1 text-gray-500">
               Add, edit and manage your products.
             </p>
           </div>
@@ -199,7 +242,7 @@ export default function AdminProductsPage() {
                 setShowForm(true);
               }
             }}
-            className="bg-pink-600 text-white px-5 py-3 rounded-lg hover:bg-pink-700"
+            className="rounded-lg bg-pink-600 px-5 py-3 text-white hover:bg-pink-700"
           >
             {showForm ? "Close" : "+ Add Product"}
           </button>
@@ -207,64 +250,87 @@ export default function AdminProductsPage() {
 
         {/* Form */}
         {showForm && (
-          <div className="bg-white rounded-xl shadow p-4 mb-4">
-            <h2 className="text-xl font-bold mb-4">
+          <div className="mb-4 rounded-xl bg-white p-4 shadow">
+            <h2 className="mb-4 text-xl font-bold">
               {editingId ? "Edit Product" : "Add New Product"}
             </h2>
 
             <div className="grid gap-4">
 
+              {/* Product Name */}
               <input
                 type="text"
                 placeholder="Product Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="border p-3 rounded-lg"
+                className="rounded-lg border p-3"
               />
 
+              {/* Category */}
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="rounded-lg border bg-white p-3"
+              >
+                <option value="">
+                  Select Product Category
+                </option>
+
+                {categories.map((item) => (
+                  <option key={item.slug} value={item.slug}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>
+
+              {/* Price */}
               <input
                 type="number"
                 placeholder="Price"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
-                className="border p-3 rounded-lg"
+                className="rounded-lg border p-3"
               />
 
+              {/* Stock */}
               <input
                 type="number"
                 placeholder="Stock"
                 value={stock}
                 onChange={(e) => setStock(e.target.value)}
-                className="border p-3 rounded-lg"
+                className="rounded-lg border p-3"
               />
 
+              {/* Description */}
               <textarea
                 placeholder="Product Description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="border p-3 rounded-lg"
+                className="rounded-lg border p-3"
                 rows={4}
               />
 
+              {/* Image */}
               <input
                 type="text"
                 placeholder="Image path e.g. /images/lipstick.jpg"
                 value={image}
                 onChange={(e) => setImage(e.target.value)}
-                className="border p-3 rounded-lg"
+                className="rounded-lg border p-3"
               />
 
+              {/* Button */}
               {editingId ? (
                 <button
                   onClick={updateProduct}
-                  className="bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700"
+                  className="rounded-lg bg-blue-600 py-3 text-white hover:bg-blue-700"
                 >
                   Update Product
                 </button>
               ) : (
                 <button
                   onClick={addProduct}
-                  className="bg-pink-600 text-white py-3 rounded-lg hover:bg-pink-700"
+                  className="rounded-lg bg-pink-600 py-3 text-white hover:bg-pink-700"
                 >
                   Add Product
                 </button>
@@ -274,7 +340,7 @@ export default function AdminProductsPage() {
         )}
 
         {/* Products */}
-        <div className="bg-white rounded-xl shadow overflow-hidden">
+        <div className="overflow-hidden rounded-xl bg-white shadow">
           <div className="overflow-x-auto">
 
             {loading ? (
@@ -292,6 +358,7 @@ export default function AdminProductsPage() {
                   <tr>
                     <th className="px-3 py-2">Image</th>
                     <th className="px-3 py-2">Product</th>
+                    <th className="px-3 py-2">Category</th>
                     <th className="px-3 py-2">Price</th>
                     <th className="px-3 py-2">Stock</th>
                     <th className="px-3 py-2">Actions</th>
@@ -300,53 +367,73 @@ export default function AdminProductsPage() {
 
                 <tbody>
                   {products.map((product) => (
-                    <tr key={product._id} className="border-t">
+                    <tr
+                      key={product._id}
+                      className="border-t"
+                    >
 
+                      {/* Image */}
                       <td className="px-6 py-4">
                         <img
                           src={product.image}
                           alt={product.name}
-                          className="w-12 h-12 object-cover rounded-lg"
+                          className="h-12 w-12 rounded-lg object-cover"
                         />
                       </td>
 
+                      {/* Product */}
                       <td className="px-6 py-4">
                         <div>
                           <p className="font-medium">
                             {product.name}
                           </p>
 
-                          <p className="text-sm text-gray-500 max-w-xs">
+                          <p className="max-w-xs text-sm text-gray-500">
                             {product.description}
                           </p>
                         </div>
                       </td>
 
+                      {/* Category */}
+                      <td className="px-3 py-4">
+                        <span className="rounded-full bg-pink-50 px-3 py-1 text-xs font-semibold text-pink-600">
+                          {categories.find(
+                            (item) =>
+                              item.slug === product.category
+                          )?.name || product.category || "—"}
+                        </span>
+                      </td>
+
+                      {/* Price */}
                       <td className="px-6 py-4">
                         ৳{product.price}
                       </td>
 
+                      {/* Stock */}
                       <td className="px-4 py-4">
                         {product.stock}
                       </td>
 
+                      {/* Actions */}
                       <td className="px-4 py-4">
-  <div className="flex flex-col sm:flex-row gap-2">
-    <button
-      onClick={() => startEdit(product)}
-      className="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600 whitespace-nowrap"
-    >
-      Edit
-    </button>
+                        <div className="flex flex-col gap-2 sm:flex-row">
+                          <button
+                            onClick={() => startEdit(product)}
+                            className="whitespace-nowrap rounded-md bg-blue-500 px-3 py-2 text-white hover:bg-blue-600"
+                          >
+                            Edit
+                          </button>
 
-    <button
-      onClick={() => deleteProduct(product._id)}
-      className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 whitespace-nowrap"
-    >
-      Delete
-    </button>
-  </div>
-</td>
+                          <button
+                            onClick={() =>
+                              deleteProduct(product._id)
+                            }
+                            className="whitespace-nowrap rounded-md bg-red-500 px-3 py-2 text-white hover:bg-red-600"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
 
                     </tr>
                   ))}
@@ -357,6 +444,7 @@ export default function AdminProductsPage() {
           </div>
         </div>
 
+        {/* Back */}
         <div className="mt-6">
           <Link
             href="/admin"

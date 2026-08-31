@@ -2,63 +2,75 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { ShoppingCart, Heart } from "lucide-react";
+import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
-import { useCart } from "../context/CartContext"
 
-export default function ProductCard({ product }: any) {
-  const { addToWishlist } = useWishlist();
+type Product = {
+  id: string | number;
+  name: string;
+  price: number;
+  image?: string;
+  description?: string;
+};
+
+export default function ProductCard({ product }: { product: Product }) {
   const { addToCart } = useCart();
+  const { addToWishlist } = useWishlist();
+
+  // Fix Invalid URL
+  const imageSrc =
+    product.image && product.image.startsWith("/")
+      ? product.image
+      : `/images/${product.image || "lipstick.jpg"}`;
 
   return (
-    <div className="bg-white rounded-2xl shadow-md p-5 hover:shadow-xl transition">
-      <Image
-        src={product.image}
-        alt={product.name}
-        width={300}
-        height={240}
-        className="w-full h-60 object-cover rounded-xl"
-      />
+    <div className="group overflow-hidden rounded-3xl border border-pink-100 bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
+      {/* Product Image */}
+      <Link href={`/products/${product.id}`} className="block">
+        <div className="relative h-64 w-full overflow-hidden bg-pink-50">
+          <Image
+            src={imageSrc}
+            alt={product.name}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        </div>
+      </Link>
 
-      <h2 className="text-xl font-bold mt-4">
-        {product.name}
-      </h2>
+      {/* Product Info */}
+      <div className="space-y-3 p-4">
+        <h3 className="line-clamp-2 text-lg font-semibold text-gray-800">
+          {product.name}
+        </h3>
 
-      <p className="text-pink-600 font-semibold mt-2">
-        {product.price}
-      </p>
+        {product.description && (
+          <p className="line-clamp-2 text-sm text-gray-500">
+            {product.description}
+          </p>
+        )}
 
-      <div className="flex mt-3 text-yellow-400">
-        ⭐⭐⭐⭐⭐
-      </div>
+        <p className="text-xl font-bold text-pink-600">
+          ৳{product.price}
+        </p>
 
-      <div className="flex gap-3 mt-5 flex-wrap">
-        <button
-  onClick={() => addToCart(product)}
-  className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700"
->
-  Add Cart
-</button>
-
-        <button
-  onClick={() => {
-    console.log("Wishlist clicked", product);
-
-    addToWishlist({
-      id: String(product._id || product.id),
-      name: product.name,
-      price: String(product.price),
-    });
-  }}
-  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
->
-  ❤️ Wishlist
-</button>
-
-        <Link href={`/products/${product.id}`}>
-          <button className="border border-pink-600 text-pink-600 px-4 py-2 rounded-lg hover:bg-pink-50">
-            Details
+        {/* Buttons */}
+        <div className="flex items-center gap-2 pt-2">
+          <button
+            onClick={() => addToCart(product)}
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-pink-500 px-4 py-2 text-white transition hover:bg-pink-600"
+          >
+            <ShoppingCart size={18} />
+            Add to Cart
           </button>
-        </Link>
+
+          <button
+            onClick={() => addToWishlist(product)}
+            className="rounded-xl border border-pink-200 p-2 text-pink-500 transition hover:bg-pink-50"
+          >
+            <Heart size={20} />
+          </button>
+        </div>
       </div>
     </div>
   );

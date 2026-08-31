@@ -15,7 +15,6 @@ export async function GET(
     await connectDB();
 
     const { id } = await params;
-    console.log("PRODUCT ID:", id);
 
     const product = await Product.findById(id);
 
@@ -47,11 +46,18 @@ export async function PUT(
 
     const { id } = await params;
 
-    const { name, price, stock, description, image } =
-      await request.json();
+    const {
+      name,
+      category,
+      price,
+      stock,
+      description,
+      image,
+    } = await request.json();
 
     if (
       !name ||
+      !category ||
       price === undefined ||
       stock === undefined ||
       !description ||
@@ -67,12 +73,16 @@ export async function PUT(
       id,
       {
         name,
+        category: category.toLowerCase().trim(),
         price: Number(price),
         stock: Number(stock),
         description,
         image,
       },
-      { new: true, runValidators: true }
+      {
+        new: true,
+        runValidators: true,
+      }
     );
 
     if (!product) {
@@ -87,7 +97,7 @@ export async function PUT(
       product,
     });
   } catch (error) {
-    console.error(error);
+    console.error("UPDATE PRODUCT ERROR:", error);
 
     return NextResponse.json(
       { message: "Failed to update product" },
@@ -120,7 +130,7 @@ export async function DELETE(
       product,
     });
   } catch (error) {
-    console.error(error);
+    console.error("DELETE PRODUCT ERROR:", error);
 
     return NextResponse.json(
       { message: "Failed to delete product" },

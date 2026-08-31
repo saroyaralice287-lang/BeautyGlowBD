@@ -8,16 +8,17 @@ import {
   ReactNode,
 } from "react";
 
-type Product = {
-  id: string;
+export type Product = {
+  id: string | number;
   name: string;
-  price: string;
+  price: number;
+  image?: string;
 };
 
 type WishlistContextType = {
   wishlist: Product[];
   addToWishlist: (product: Product) => void;
-  removeFromWishlist: (id: string) => void;
+  removeFromWishlist: (id: string | number) => void;
 };
 
 const WishlistContext = createContext<WishlistContextType | null>(null);
@@ -61,11 +62,9 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const removeFromWishlist = (id: string) => {
-    setWishlist((prev) =>
-      prev.filter((item) => item.id !== id)
-    );
-  };
+  const removeFromWishlist = (id: string | number) => {
+  setWishlist((prev) => prev.filter((item) => item.id !== id));
+};
 
   return (
     <WishlistContext.Provider

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "../../lib/mongodb";
 import Product from "../../models/Product";
 
+// GET all products
 export async function GET() {
   try {
     await connectDB();
@@ -10,7 +11,7 @@ export async function GET() {
 
     return NextResponse.json(products);
   } catch (error) {
-    console.error(error);
+    console.error("GET /api/products error:", error);
 
     return NextResponse.json(
       { message: "Failed to fetch products" },
@@ -19,14 +20,30 @@ export async function GET() {
   }
 }
 
+// ADD new product
 export async function POST(request: Request) {
   try {
     await connectDB();
 
-    const { name, price, stock, description, image } =
-      await request.json();
+    const body = await request.json();
 
-    if (!name || price === undefined || stock === undefined || !description || !image) {
+    const {
+      name,
+      category,
+      price,
+      stock,
+      description,
+      image,
+    } = body;
+
+    if (
+      !name ||
+      !category ||
+      !price ||
+      !stock ||
+      !description ||
+      !image
+    ) {
       return NextResponse.json(
         { message: "All fields are required" },
         { status: 400 }
@@ -35,6 +52,7 @@ export async function POST(request: Request) {
 
     const product = await Product.create({
       name,
+      category: category.toLowerCase().trim(),
       price: Number(price),
       stock: Number(stock),
       description,
@@ -49,7 +67,7 @@ export async function POST(request: Request) {
       { status: 201 }
     );
   } catch (error) {
-    console.error(error);
+    console.error("POST /api/products error:", error);
 
     return NextResponse.json(
       { message: "Failed to add product" },

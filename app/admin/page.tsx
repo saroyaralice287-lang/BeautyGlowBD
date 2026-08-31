@@ -2,17 +2,38 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function AdminPage() {
+  const router = useRouter();
+
   const [products, setProducts] = useState(0);
   const [orders, setOrders] = useState(0);
   const [customers, setCustomers] = useState(0);
   const [sales, setSales] = useState(0);
+
   const [loading, setLoading] = useState(true);
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
-    const loadDashboard = async () => {
+    const checkAdmin = async () => {
       try {
+        const authRes = await fetch("/api/auth/me");
+        const authData = await authRes.json();
+
+        if (!authRes.ok || !authData.loggedIn) {
+          router.replace("/login");
+          return;
+        }
+
+        if (authData.user?.role !== "admin") {
+          alert("Access denied. Admin only.");
+          router.replace("/");
+          return;
+        }
+
+        setCheckingAuth(false);
+
         const [productsRes, ordersRes, customersRes] =
           await Promise.all([
             fetch("/api/products"),
@@ -53,117 +74,143 @@ export default function AdminPage() {
         }
       } catch (error) {
         console.error("Dashboard error:", error);
+        router.replace("/");
       } finally {
         setLoading(false);
       }
     };
 
-    loadDashboard();
-  }, []);
+    checkAdmin();
+  }, [router]);
+
+  if (checkingAuth || loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <div className="text-5xl">🔐</div>
+
+          <p className="mt-4 font-semibold text-gray-600">
+            Checking Admin Access...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-6xl mx-auto">
+      <div className="mx-auto max-w-6xl">
 
         {/* Header */}
-        <div className="bg-white rounded-xl shadow p-6 mb-6">
-          <h1 className="text-3xl font-bold text-pink-600">
-            BeautyGlowBD Admin Panel
+        <div className="mb-6 rounded-xl bg-white p-6 shadow">
+          <p className="text-xs font-bold uppercase tracking-[3px] text-pink-600">
+            QYVANO A²Z
+          </p>
+
+          <h1 className="mt-2 text-3xl font-bold text-gray-900">
+            Admin Panel 👑
           </h1>
 
-          <p className="text-gray-500 mt-2">
-            Manage your store from one place.
+          <p className="mt-2 text-gray-500">
+            Manage your QYVANO A²Z store from one place.
           </p>
         </div>
 
         {/* Statistics */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+        <div className="mb-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
 
-          <div className="bg-white rounded-xl shadow p-6">
+          <div className="rounded-xl bg-white p-6 shadow">
             <p className="text-gray-500">Products</p>
-            <h2 className="text-3xl font-bold text-pink-600 mt-2">
-              {loading ? "..." : products}
+
+            <h2 className="mt-2 text-3xl font-bold text-pink-600">
+              {products}
             </h2>
           </div>
 
-          <div className="bg-white rounded-xl shadow p-6">
+          <div className="rounded-xl bg-white p-6 shadow">
             <p className="text-gray-500">Orders</p>
-            <h2 className="text-3xl font-bold text-blue-600 mt-2">
-              {loading ? "..." : orders}
+
+            <h2 className="mt-2 text-3xl font-bold text-blue-600">
+              {orders}
             </h2>
           </div>
 
-          <div className="bg-white rounded-xl shadow p-6">
+          <div className="rounded-xl bg-white p-6 shadow">
             <p className="text-gray-500">Customers</p>
-            <h2 className="text-3xl font-bold text-green-600 mt-2">
-              {loading ? "..." : customers}
+
+            <h2 className="mt-2 text-3xl font-bold text-green-600">
+              {customers}
             </h2>
           </div>
 
-          <div className="bg-white rounded-xl shadow p-6">
+          <div className="rounded-xl bg-white p-6 shadow">
             <p className="text-gray-500">Total Sales</p>
-            <h2 className="text-3xl font-bold text-purple-600 mt-2">
-              {loading ? "..." : "BDT " + sales}
+
+            <h2 className="mt-2 text-3xl font-bold text-purple-600">
+              BDT {sales}
             </h2>
           </div>
 
         </div>
 
         {/* Management Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
 
-          <div className="bg-white rounded-xl shadow p-6">
-            <div className="text-4xl mb-3">🛍️</div>
+          {/* Products */}
+          <div className="rounded-xl bg-white p-6 shadow">
+            <div className="mb-3 text-4xl">🛍️</div>
 
             <h2 className="text-xl font-bold">
               Products
             </h2>
 
-            <p className="text-gray-500 mt-2 mb-4">
+            <p className="mb-4 mt-2 text-gray-500">
               Add, edit and delete products.
             </p>
 
             <Link
               href="/admin/products"
-              className="inline-block bg-pink-600 text-white px-5 py-3 rounded-lg hover:bg-pink-700"
+              className="inline-block rounded-lg bg-pink-600 px-5 py-3 text-white hover:bg-pink-700"
             >
               Manage Products
             </Link>
           </div>
 
-          <div className="bg-white rounded-xl shadow p-6">
-            <div className="text-4xl mb-3">📦</div>
+          {/* Orders */}
+          <div className="rounded-xl bg-white p-6 shadow">
+            <div className="mb-3 text-4xl">📦</div>
 
             <h2 className="text-xl font-bold">
               Orders
             </h2>
 
-            <p className="text-gray-500 mt-2 mb-4">
+            <p className="mb-4 mt-2 text-gray-500">
               View and manage customer orders.
             </p>
 
             <Link
               href="/admin/orders"
-              className="inline-block bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700"
+              className="inline-block rounded-lg bg-blue-600 px-5 py-3 text-white hover:bg-blue-700"
             >
               Manage Orders
             </Link>
           </div>
 
-          <div className="bg-white rounded-xl shadow p-6">
-            <div className="text-4xl mb-3">👥</div>
+          {/* Customers */}
+          <div className="rounded-xl bg-white p-6 shadow">
+            <div className="mb-3 text-4xl">👥</div>
 
             <h2 className="text-xl font-bold">
               Customers
             </h2>
 
-            <p className="text-gray-500 mt-2 mb-4">
+            <p className="mb-4 mt-2 text-gray-500">
               View and manage customers.
             </p>
 
             <Link
               href="/admin/customers"
-              className="inline-block bg-green-600 text-white px-5 py-3 rounded-lg hover:bg-green-700"
+              className="inline-block rounded-lg bg-green-600 px-5 py-3 text-white hover:bg-green-700"
             >
               Manage Customers
             </Link>
